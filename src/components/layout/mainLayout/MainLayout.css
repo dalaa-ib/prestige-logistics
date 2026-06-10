@@ -1,0 +1,11 @@
+.main-layout {
+    min-height: 100vh;
+    background: #f5f7fb;
+    direction: rtl;
+}
+
+.page-content {
+    min-height: 100vh;
+    padding: 96px 40px 40px;
+    margin-right: 260px;
+}

@@ -1,0 +1,296 @@
+.menu-button,
+.sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        min-width: 320px;
+    }
+
+    .main-layout {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .page-content {
+        margin-right: 0;
+        max-width: 100%;
+        padding: 90px 18px 32px;
+        overflow-x: hidden;
+    }
+
+    .topbar {
+        right: 0;
+        padding: 0 18px;
+    }
+
+    .menu-button {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 8px;
+        background: #f5f7fb;
+        color: #0D1C32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .sidebar {
+        width: 270px;
+        z-index: 100;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        box-shadow: -12px 0 35px rgba(15, 23, 42, 0.15);
+    }
+
+    .sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-open .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        border: 0;
+        background: rgba(15, 23, 42, 0.35);
+        z-index: 90;
+    }
+
+    .sidebar-logo {
+        display: block;
+    }
+
+    .sidebar-logo h2 {
+        font-size: 20px;
+    }
+
+    .sidebar-logo p,
+    .sidebar-link span,
+    .logout-link span {
+        display: inline;
+    }
+
+    .sidebar-menu {
+        flex-direction: column;
+        align-items: stretch;
+        height: calc(100vh - 140px);
+        overflow-y: auto;
+    }
+
+    .sidebar-link,
+    .logout-link {
+        justify-content: flex-start;
+        min-width: auto;
+        height: 48px;
+        padding: 0 15px;
+        gap: 12px;
+    }
+
+    .logout-link {
+        margin-top: auto;
+    }
+
+    .topbar-search-box {
+        width: 230px;
+    }
+
+    .table-box,
+    .promo-table-box,
+    .finance-box,
+    .orders-table-box {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: block;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-box table,
+    .promo-table-box table,
+    .finance-box table,
+    .orders-table-box table {
+        width: max-content;
+        min-width: 900px;
+        table-layout: auto;
+    }
+
+    .table-box th,
+    .table-box td,
+    .promo-table-box th,
+    .promo-table-box td,
+    .finance-box th,
+    .finance-box td,
+    .orders-table-box th,
+    .orders-table-box td {
+        white-space: nowrap;
+    }
+
+    .orders-content {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .orders-side {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .orders-update-btn {
+        width: 100%;
+        max-width: 100%;
+        justify-content: center;
+    }
+
+    .orders-table-title,
+    .orders-table-end {
+        min-width: 900px;
+    }
+
+    .cards-grid,
+    .cards-box,
+    .cards-box2,
+    .cards-box3,
+    .finance-cards,
+    .orders-cards,
+    .promo-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-row,
+    .top-row,
+    .orders-content,
+    .restaurants-content,
+    .promo-bottom {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-box,
+    .finance-filter,
+    .filter-box1 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-box .search-box,
+    .finance-filter .search-box,
+    .filter-box1 .search-box {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        height: 64px;
+        padding: 0 12px;
+    }
+
+    .topbar-search-box {
+        display: none;
+    }
+
+    .page-content {
+        padding: 82px 12px 28px;
+    }
+
+    .cards-grid,
+    .cards-box,
+    .cards-box2,
+    .cards-box3,
+    .finance-cards,
+    .orders-cards,
+    .promo-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-box,
+    .finance-filter,
+    .filter-box1 {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header,
+    .users-head,
+    .drivers-head,
+    .restaurants-head,
+    .ads-head,
+    .finance-head,
+    .orders-head,
+    .promo-head {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .head-btns,
+    .orders-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .add-btn,
+    .dark-btn,
+    .light-btn,
+    .finance-export-btn,
+    .orders-export-btn,
+    .promo-add-btn,
+    .orders-update-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .orders-table-box table,
+    .orders-table-title,
+    .orders-table-end {
+        min-width: 860px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: 78px 10px 24px;
+    }
+
+    .dashboard-header h1,
+    .users-head h1,
+    .drivers-head h1,
+    .restaurants-head h1,
+    .ads-head h1,
+    .finance-head h1,
+    .orders-head h1,
+    .promo-head h1 {
+        font-size: 21px;
+    }
+
+    .orders-table-box table,
+    .orders-table-title,
+    .orders-table-end {
+        min-width: 820px;
+    }
+
+    .table-box th,
+    .table-box td,
+    .promo-table-box th,
+    .promo-table-box td,
+    .finance-box th,
+    .finance-box td,
+    .orders-table-box th,
+    .orders-table-box td {
+        padding: 12px;
+        font-size: 13px;
+    }
+}

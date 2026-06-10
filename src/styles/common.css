@@ -1,0 +1,225 @@
+.add-btn,
+.dark-btn,
+.finance-export-btn,
+.orders-export-btn,
+.promo-add-btn {
+    border: none;
+    background: #0D1C32;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.search-box {
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+}
+
+.search-box svg {
+    color: #94A3B8;
+}
+
+.search-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #191C1E;
+    font-family: inherit;
+}
+
+.search-box input::placeholder {
+    color: #94A3B8;
+}
+
+.filter-btn {
+    height: 44px;
+    border: none;
+    border-radius: 6px;
+    background-color: #0D1C32;
+    color: white;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.table-box,
+.promo-table-box,
+.finance-box,
+.orders-table-box {
+    overflow: hidden;
+}
+
+.table-box table,
+.promo-table-box table,
+.finance-box table,
+.orders-table-box table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.state,
+.promo-state,
+.finance-state,
+.orders-state,
+.status {
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btns,
+.promo-actions,
+.finance-btns,
+.orders-btns {
+    display: flex;
+    align-items: center;
+}
+
+.action-btns button,
+.promo-actions button,
+.finance-btns button,
+.orders-btns button {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.table-end,
+.promo-table-end,
+.finance-table-end,
+.orders-table-end {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pages,
+.promo-pages,
+.finance-pages,
+.orders-pages {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pages button,
+.promo-pages button,
+.finance-pages button,
+.orders-pages button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.form-bg,
+.promo-bg,
+.finance-bg,
+.orders-bg {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-head,
+.promo-form-head,
+.finance-form-head,
+.orders-form-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-head button,
+.promo-form-head button,
+.finance-form-head button,
+.orders-form-head button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #64748B;
+}
+
+.form-input,
+.promo-input,
+.finance-input,
+.orders-input {
+    margin-bottom: 15px;
+}
+
+.form-input label,
+.promo-input label,
+.finance-input label,
+.orders-input label {
+    display: block;
+    margin-bottom: 7px;
+    color: #64748B;
+    font-size: 13px;
+}
+
+.form-input input,
+.form-input select,
+.form-input textarea,
+.promo-input input,
+.promo-input select,
+.finance-input input,
+.finance-input select,
+.orders-input input,
+.orders-input select {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    outline: none;
+    font-family: inherit;
+    color: #191C1E;
+    background: white;
+}
+
+.form-btns,
+.promo-form-btns,
+.finance-form-btns,
+.orders-form-btns {
+    display: flex;
+    margin-top: 20px;
+}
+
+.form-btns button,
+.promo-form-btns button,
+.finance-form-btns button,
+.orders-form-btns button {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.show-line,
+.promo-line,
+.finance-line,
+.orders-line {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.show-line span,
+.promo-line span,
+.finance-line span,
+.orders-line span {
+    color: #94A3B8;
+}
+
+.delete-text,
+.promo-delete-text,
+.finance-delete-text,
+.orders-delete-text {
+    color: #94A3B8;
+    line-height: 1.8;
+}
