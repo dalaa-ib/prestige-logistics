@@ -29,7 +29,7 @@ function App() {
           <Route path="/drivers" element={<Drivers />} />
           <Route path="/promo-codes" element={<PromoCodes />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/finance" element={<Finance />} />
+          {/* <Route path="/finance" element={<Finance />} /> */}
         </Route>
       </Routes>
     </HashRouter>

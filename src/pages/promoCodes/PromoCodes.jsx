@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     Plus,
     Eye,
@@ -12,6 +12,7 @@ import {
     BadgeCheck
 } from 'lucide-react'
 import './PromoCodes.css'
+import api from '../../api/api'
 
 import promotionalStrategy from '../../assets/images/promotionalStrategy.png'
 import marketingSpecialist from '../../assets/images/marketingSpecialist.png'
@@ -24,74 +25,96 @@ function PromoCodes() {
 
     const [form, setForm] = useState({
         code: '',
-        discount: '',
-        uses: '',
-        endDate: '',
-        status: 'نشط'
+        discount_type: 'percentage',
+        discount_value: '',
+        min_order_value: '',
+        max_uses: '',
+        expiry_date: ''
     })
 
-    const [codes, setCodes] = useState([
-        {
-            code: 'SUMMER20',
-            discount: '20%',
-            uses: '450 / 500',
-            endDate: '2024/09/30',
-            status: 'نشط'
-        },
-        {
-            code: 'PRESTIGE50',
-            discount: '50%',
-            uses: '1,200 / 1,200',
-            endDate: '2024/12/31',
-            status: 'نشط'
-        },
-        {
-            code: 'FIRSTORDER',
-            discount: '15%',
-            uses: '890 / 1,000',
-            endDate: '2024/01/01',
-            status: 'غير نشط'
-        }
-    ])
+    const [codes, setCodes] = useState([])
+    const [promoStats, setPromoStats] = useState({
+        total: 0,
+        active: 0,
+        usage: 0,
+        conversion: 0
+    })
 
     const cards = [
         {
             title: 'إجمالي الأكواد',
-            value: '124',
-            text: '+12%',
+            value: promoStats.total,
+            text: '',
         },
         {
             title: 'الأكواد النشطة',
-            value: '86',
+            value: promoStats.active,
             text: '',
         },
         {
             title: 'إجمالي الاستخدام',
-            value: '1,420',
+            value: promoStats.usage,
             text: '',
         },
         {
             title: 'معدل التحويل',
-            value: '24.5%',
+            value: `${promoStats.conversion}%`,
             text: '',
         }
     ]
+
+    useEffect(() => {
+        const getPromoCodes = async () => {
+            try {
+                const response = await api.get('/admin/getPromoCode')
+
+                const data = Array.isArray(response.data)
+                    ? response.data
+                    : response.data.data || []
+
+                console.log(response.data)
+
+                setCodes(data)
+                setPromoStats({
+                    total: data.length,
+                    active: data.filter((item) => item.is_active).length,
+                    usage: data.reduce((sum, item) => sum + (item.used_count || 0), 0),
+                    conversion: 0
+                })
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getPromoCodes()
+    }, [])
 
     const openAddForm = () => {
         setEditIndex(null)
         setForm({
             code: '',
-            discount: '',
-            uses: '',
-            endDate: '',
-            status: 'نشط'
+            discount_type: 'percentage',
+            discount_value: '',
+            min_order_value: '',
+            max_uses: '',
+            expiry_date: ''
         })
         setShowForm(true)
     }
 
     const openEditForm = (item, index) => {
-        setEditIndex(index)
-        setForm(item)
+        setEditIndex(item.id)
+
+        setForm({
+            code: item.code || '',
+            discount_type: item.discount_type || 'percentage',
+            discount_value: item.discount_value || '',
+            min_order_value: item.min_order_value || '',
+            max_uses: item.max_uses || '',
+            expiry_date: item.expiry_date ? item.expiry_date.split(' ')[0] : ''
+        })
+
         setShowForm(true)
     }
 
@@ -104,28 +127,53 @@ function PromoCodes() {
         }))
     }
 
-    const saveCode = (e) => {
+    const saveCode = async (e) => {
         e.preventDefault()
 
-        if (!form.code || !form.discount || !form.uses || !form.endDate) {
-            return
-        }
+        try {
 
-        if (editIndex !== null) {
-            setCodes((prevCodes) => prevCodes.map((item, index) =>
-                index === editIndex ? form : item
-            ))
-        } else {
-            setCodes((prevCodes) => [form, ...prevCodes])
-        }
+            const data = {
+                code: form.code,
+                discount_type: form.discount_type,
+                discount_value: Number(form.discount_value),
+                min_order_value: Number(form.min_order_value),
+                max_uses: Number(form.max_uses),
+                expiry_date: form.expiry_date
+            }
+            if (editIndex !== null) {
+                await api.post(
+                    `/admin/UpdatePromoCode/${editIndex}`,
+                    data
+                )
+            } else {
+                await api.post(
+                    '/admin/AddPromoCode',
+                    data
+                )
+                console.log('updated')
+            }
 
-        setShowForm(false)
-        setEditIndex(null)
+            const promoResponse = await api.get('/admin/getPromoCode')
+            console.log(promoResponse.data)
+            setCodes(promoResponse.data.data)
+
+            setShowForm(false)
+            setEditIndex(null)
+
+        } catch (error) {
+            console.log(error.response?.data)
+        }
     }
 
-    const deleteCode = () => {
-        setCodes((prevCodes) => prevCodes.filter((item, index) => index !== deleteIndex))
-        setDeleteIndex(null)
+    const deleteCode = async () => {
+        try {
+            await api.delete(`/admin/DeletePromoCode/${deleteIndex.id}`)
+            const response = await api.get('/admin/getPromoCode')
+            setCodes(response.data.data)
+            setDeleteIndex(null)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -186,12 +234,15 @@ function PromoCodes() {
                                         {item.code}
                                     </span>
                                 </td>
-                                <td>{item.discount}</td>
-                                <td>{item.uses}</td>
-                                <td>{item.endDate}</td>
                                 <td>
-                                    <span className={item.status === 'نشط' ? 'promo-state active' : 'promo-state stop'}>
-                                        {item.status}
+                                    {item.discount_value}
+                                    {item.discount_type === 'percentage' ? '%' : ''}
+                                </td>
+                                <td>{item.max_uses}</td>
+                                <td>{item.expiry_date}</td>
+                                <td>
+                                    <span className={item.is_active ? 'promo-state active' : 'promo-state stop'}>
+                                        {item.is_active ? 'نشط' : 'غير نشط'}
                                     </span>
                                 </td>
                                 <td>
@@ -202,7 +253,7 @@ function PromoCodes() {
                                         <button onClick={() => openEditForm(item, index)}>
                                             <Pencil size={16} />
                                         </button>
-                                        <button onClick={() => setDeleteIndex(index)}>
+                                        <button onClick={() => setDeleteIndex(item)}>
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -213,15 +264,13 @@ function PromoCodes() {
                 </table>
 
                 <div className="promo-table-end">
-                    <p>عرض 1 إلى 10 من أصل 124 كود خصم</p>
+                    <p>عرض {codes.length} من أصل {codes.length} كود خصم</p>
 
                     <div className="promo-pages">
                         <button>
                             <ChevronRight size={16} />
                         </button>
                         <button className="active">1</button>
-                        <button>2</button>
-                        <button>3</button>
                         <button>
                             <ChevronLeft size={16} />
                         </button>
@@ -233,7 +282,8 @@ function PromoCodes() {
                 <div className="promo-note">
                     <div className="note-icon">
                         <BadgeCheck size={18} />
-                    </div>                    <h3>نصيحة الخبير</h3>
+                    </div>
+                    <h3>نصيحة الخبير</h3>
                     <p>"تفعيل الأكواد لفترات محدودة (Flash Sales) يرفع معدل التحويل بنسبة تصل إلى 40% مقارنة بالأكواد
                         الدائمة."</p>
                     <div className="note-user">
@@ -276,13 +326,34 @@ function PromoCodes() {
                         </div>
 
                         <div className="promo-input">
-                            <label>نسبة الخصم</label>
+                            <label>نوع الخصم</label>
+                            <select
+                                name="discount_type"
+                                value={form.discount_type}
+                                onChange={handleChange}
+                            >
+                                <option value="percentage">نسبة</option>
+                                <option value="fixed">قيمة ثابتة</option>
+                            </select>
+                        </div>
+
+                        <div className="promo-input">
+                            <label>قيمة الخصم</label>
                             <input
                                 type="text"
-                                name="discount"
-                                value={form.discount}
+                                name="discount_value"
+                                value={form.discount_value}
                                 onChange={handleChange}
-                                placeholder="20%"
+                            />
+                        </div>
+
+                        <div className="promo-input">
+                            <label>أقل قيمة طلب</label>
+                            <input
+                                type="text"
+                                name="min_order_value"
+                                value={form.min_order_value}
+                                onChange={handleChange}
                             />
                         </div>
 
@@ -290,21 +361,20 @@ function PromoCodes() {
                             <label>عدد الاستخدام</label>
                             <input
                                 type="text"
-                                name="uses"
-                                value={form.uses}
+                                name="max_uses"
+                                value={form.max_uses}
                                 onChange={handleChange}
-                                placeholder="450 / 500"
                             />
                         </div>
 
                         <div className="promo-input">
                             <label>تاريخ الانتهاء</label>
                             <input
-                                type="text"
-                                name="endDate"
-                                value={form.endDate}
+                                type="date"
+                                name="expiry_date"
+                                min={new Date().toISOString().split('T')[0]}
+                                value={form.expiry_date}
                                 onChange={handleChange}
-                                placeholder="2024/09/30"
                             />
                         </div>
 
@@ -345,22 +415,25 @@ function PromoCodes() {
 
                         <div className="promo-line">
                             <span>نسبة الخصم</span>
-                            <b>{showCode.discount}</b>
+                            <b>
+                                {showCode.discount_value}
+                                {showCode.discount_type === 'percentage' ? '%' : ''}
+                            </b>
                         </div>
 
                         <div className="promo-line">
                             <span>عدد الاستخدام</span>
-                            <b>{showCode.uses}</b>
+                            <b>{showCode.max_uses}</b>
                         </div>
 
                         <div className="promo-line">
                             <span>تاريخ الانتهاء</span>
-                            <b>{showCode.endDate}</b>
+                            <b>{showCode.expiry_date}</b>
                         </div>
 
                         <div className="promo-line">
                             <span>الحالة</span>
-                            <b>{showCode.status}</b>
+                            <b>{showCode.is_active ? 'نشط' : 'غير نشط'}</b>
                         </div>
                     </div>
                 </div>

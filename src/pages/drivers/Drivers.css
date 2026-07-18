@@ -19,7 +19,9 @@
 .drivers-head p {
     color: #94A3B8;
     font-size: 14px;
-}.add-btn {
+}
+
+.add-btn {
     height: 42px;
     padding: 0 16px;
     border-radius: 6px;
@@ -121,32 +123,6 @@
     font-size: 13px;
 }
 
-.driver-btns {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.driver-btns button {
-    height: 36px;
-    padding: 0 14px;
-    border-radius: 6px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.driver-btns button:first-child {
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: transparent;
-    color: white;
-}
-
-.driver-btns button:last-child {
-    border: none;
-    background: white;
-    color: #0D1C32;
-}
-
 .report-box h3 {
     color: #191C1E;
     font-size: 18px;
@@ -173,7 +149,9 @@
     padding: 0 14px;
     margin-bottom: 10px;
     cursor: pointer;
-}.table-box {
+}
+
+.table-box {
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -184,8 +162,11 @@
     border-bottom: 1px solid #e5e7eb;
     display: grid;
     grid-template-columns: 1fr 170px 170px;
+    /* grid-template-columns: 1fr 170px; */
     gap: 14px;
-}.search-box {
+}
+
+.search-box {
     height: 44px;
     border-radius: 6px;
 }
@@ -215,6 +196,7 @@
     border-top: 1px solid #f1f5f9;
     color: #191C1E;
     font-size: 14px;
+    text-align: right;
 }
 
 .driver-name {
@@ -238,7 +220,9 @@
 
 .driver-name b {
     font-size: 14px;
-}.state {
+}
+
+.state {
     min-width: 70px;
     height: 27px;
     padding: 0 12px;
@@ -256,29 +240,8 @@
     color: #DC2626;
 }
 
-.rate {
-    height: 26px;
-    padding: 0 12px;
-    border-radius: 20px;
-    background: #EFF6FF;
-    color: #2563EB;
-    font-size: 12px;
-    display: inline-flex;
-    align-items: center;
-}.action-btns {
-    gap: 8px;
-}.action-btns button {
-    width: 32px;
-    height: 32px;
-    background: #F8FAFC;
-    color: #39475F;
-    border-radius: 6px;
-}
 
-.action-btns button:hover {
-    background: #0D1C32;
-    color: white;
-}.table-end {
+.table-end {
     padding: 18px;
     border-top: 1px solid #f1f5f9;
 }
@@ -286,7 +249,9 @@
 .table-end p {
     color: #94A3B8;
     font-size: 13px;
-}.pages button {
+}
+
+.pages button {
     min-width: 38px;
     height: 38px;
     padding: 0 12px;
@@ -308,7 +273,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}.form-bg {
+}
+
+.form-bg {
     background: rgba(13, 28, 50, 0.4);
     z-index: 60;
 }
@@ -318,20 +285,31 @@
     background: white;
     border-radius: 8px;
     padding: 22px;
-}.form-head {
+}
+
+.form-head {
     margin-bottom: 20px;
 }
 
 .form-head h3 {
     color: #191C1E;
     font-size: 20px;
-}.form-head button {
+}
+
+.form-head button {
     width: 32px;
     height: 32px;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.form-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
 }
 
 .form-input input,
@@ -343,9 +321,18 @@
     padding: 0 12px;
     font-family: inherit;
     outline: none;
-}.form-btns {
+}
+
+.form-input label {
+    font-size: 14px;
+    color: #191C1E;
+}
+
+.form-btns {
     gap: 10px;
-}.form-btns button {
+}
+
+.form-btns button {
     flex: 1;
     height: 42px;
     border-radius: 6px;
@@ -361,18 +348,39 @@
     border: none;
     background: #0D1C32;
     color: white;
-}.show-line {
+}
+
+.show-line {
     align-items: center;
     border-top: 1px solid #f1f5f9;
     padding: 13px 0;
-}.show-line span {
+}
+
+.show-line span {
     font-size: 14px;
 }
 
 .show-line b {
     color: #191C1E;
     font-size: 14px;
-}.delete-text {
-    font-size: 14px;
-    margin: 15px 0;
+}
+
+.action-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btns button {
+    width: 32px;
+    height: 32px;
+    background: #F8FAFC;
+    color: #39475F;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btns button:hover {
+    background: #0D1C32;
+    color: white;
 }

@@ -20,7 +20,9 @@
 .ads-head p {
     color: #94A3B8;
     font-size: 14px;
-}.add-btn {
+}
+
+.add-btn {
     height: 44px;
     padding: 0 18px;
     border-radius: 10px;
@@ -79,7 +81,9 @@
     border: 1px solid #E2E8F0;
     border-radius: 14px;
     padding: 18px;
-}.search-box {
+}
+
+.search-box {
     flex: 1;
     height: 46px;
     border-radius: 10px;
@@ -93,10 +97,14 @@
     padding: 0 12px;
     font-family: inherit;
     background: #FFFFFF;
-}.filter-btn {
+}
+
+.filter-btn {
     padding: 0 18px;
     background: #0D1C32;
-}.table-box {
+}
+
+.table-box {
     background: #FFFFFF;
     border-radius: 14px;
     border: 1px solid #E2E8F0;
@@ -123,6 +131,7 @@
     padding: 16px;
     text-align: center;
     border-top: 1px solid #F1F5F9;
+    text-align: right;
 }
 
 .ad-img {
@@ -140,7 +149,9 @@
 .ad-data p {
     color: #94A3B8;
     font-size: 12px;
-}.state {
+}
+
+.state {
     padding: 5px 12px;
     border-radius: 999px;
     font-size: 13px;
@@ -154,10 +165,14 @@
 .state.stop {
     background: #FFFBEB;
     color: #D97706;
-}.action-btns {
-    justify-content: center;
+}
+
+.action-btns {
+    /* justify-content: center; */
     gap: 10px;
-}.action-btns button {
+}
+
+.action-btns button {
     width: 34px;
     height: 34px;
     border-radius: 8px;
@@ -167,7 +182,9 @@
 
 .action-btns button:hover {
     background: #EEF2FF;
-}.table-end {
+}
+
+.table-end {
     padding: 18px;
     border-top: 1px solid #E2E8F0;
 }
@@ -175,7 +192,9 @@
 .table-end p {
     color: #94A3B8;
     font-size: 14px;
-}.form-bg {
+}
+
+.form-bg {
     background: rgba(13, 28, 50, 0.45);
     z-index: 1000;
 }
@@ -188,7 +207,9 @@
     background: #FFFFFF;
     border-radius: 16px;
     padding: 24px;
-}.form-head {
+}
+
+.form-head {
     margin-bottom: 20px;
 }
 
@@ -244,10 +265,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-}.form-btns {
+}
+
+.form-btns {
     justify-content: flex-end;
     gap: 12px;
-}.form-btns button {
+}
+
+.form-btns button {
     height: 42px;
     padding: 0 18px;
     border-radius: 10px;
@@ -280,7 +305,9 @@
 .ad-show p {
     color: #64748B;
     margin-bottom: 20px;
-}.show-line {
+}
+
+.show-line {
     padding: 12px 0;
     border-top: 1px solid #E2E8F0;
 }

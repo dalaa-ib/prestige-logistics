@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     Mail,
+    Phone,
     LockKeyhole,
     Eye,
     EyeOff,
@@ -11,13 +12,14 @@ import {
 } from 'lucide-react'
 import './Login.css'
 import logisticsImage from '../../assets/images/Logistics Visualization.png'
+import api from '../../api/api'
 
 function Login() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [formData, setFormData] = useState({
-        email: '',
+        phone: '',
         password: '',
         remember: false
     })
@@ -33,15 +35,28 @@ function Login() {
         setError('')
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!formData.email || !formData.password) {
-            setError('يرجى إدخال البريد الإلكتروني وكلمة المرور')
+        if (!formData.phone || !formData.password) {
+            setError('يرجى إدخال رقم الهاتف وكلمة المرور')
             return
         }
 
-        navigate('/dashboard')
+        try {
+            const response = await api.post('/adminlogin', {
+                phone: formData.phone,
+                password: formData.password
+            })
+
+            console.log(response.data)
+            localStorage.setItem('token', response.data.token)
+            navigate('/dashboard')
+
+        } catch (error) {
+            setError('رقم الهاتف أو كلمة المرور غير صحيحة')
+            console.log(error.response.data)
+        }
     }
 
     return (
@@ -81,14 +96,14 @@ function Login() {
                     </div>
 
                     <div className="field-group">
-                        <label>البريد الإلكتروني</label>
+                        <label>رقم الهاتف</label>
                         <div className="input-box">
-                            <Mail size={20} />
+                            <Phone size={20} />
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                placeholder="admin@.com"
+                                type="text"
+                                name="phone"
+                                value={formData.phone}
+                                placeholder="09xxxxxxxx"
                                 onChange={handleChange}
                                 dir="ltr"
                             />

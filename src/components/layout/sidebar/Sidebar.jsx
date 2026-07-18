@@ -49,11 +49,11 @@ function Sidebar({ onClose }) {
             path: '/orders',
             icon: ClipboardList
         },
-        {
-            title: 'المالية',
-            path: '/finance',
-            icon: Wallet
-        }
+        // {
+        //     title: 'المالية',
+        //     path: '/finance',
+        //     icon: Wallet
+        // }
     ]
 
     return (

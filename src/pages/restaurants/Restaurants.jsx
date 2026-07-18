@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     Plus,
     Power,
@@ -16,6 +16,7 @@ import {
     FileText
 } from 'lucide-react'
 import './Restaurants.css'
+import api from '../../api/api'
 
 import resturant1 from '../../assets/images/resturant1.png'
 
@@ -23,13 +24,13 @@ function Restaurants() {
     const [showForm, setShowForm] = useState(false)
     const [editIndex, setEditIndex] = useState(null)
     const [showData, setShowData] = useState(null)
+    const [restaurantMeals, setRestaurantMeals] = useState([])
     const [deleteIndex, setDeleteIndex] = useState(null)
-
+    const [selectedRestaurant, setSelectedRestaurant] = useState('')
     const [form, setForm] = useState({
         code: '',
         name: '',
-        city: 'الرياض',
-        commission: '',
+        phone: '',
         status: 'نشط'
     })
 
@@ -38,59 +39,62 @@ function Restaurants() {
         deliveryTime: '10'
     })
 
-    const [restaurants, setRestaurants] = useState([
-        {
-            code: 'LU',
-            name: 'لو بريميير جورميه',
-            city: 'الرياض',
-            commission: '15%',
-            status: 'نشط'
-        },
-        {
-            code: 'ST',
-            name: 'ستيك هاوس الرواد',
-            city: 'جدة',
-            commission: '12%',
-            status: 'نشط'
-        },
-        {
-            code: 'AR',
-            name: 'أروما كافيه',
-            city: 'الدمام',
-            commission: '10%',
-            status: 'غير نشط'
+    const [restaurants, setRestaurants] = useState([])
+    const [showMealForm, setShowMealForm] = useState(false)
+
+    const [mealForm, setMealForm] = useState({
+        restaurant_id: '',
+        name: '',
+        original_price: '',
+        category_name: '',
+    })
+
+    useEffect(() => {
+        const getRestaurants = async () => {
+            try {
+                const response = await api.get('/admin/resturant/getAllRestaurants')
+
+                console.log(response.data.data)
+
+                setRestaurants(response.data.data)
+
+            } catch (error) {
+                console.log(error)
+            }
         }
-    ])
+
+        getRestaurants()
+    }, [])
 
     const cards = [
         {
             title: 'إجمالي المطاعم',
-            value: '1,284',
-            text: '+12% هذا الشهر',
+            value: restaurants.length,
+            text: ' ',
             icon: Store,
             color: '#39475F',
             bg: '#D6E3FF'
         },
         {
             title: 'المطاعم النشطة',
-            value: '942',
-            text: '73% من الإجمالي',
+            value: restaurants.filter(item => item.status === 'open').length,
+            text: ' ',
             icon: CheckCircle,
             color: '#16A34A',
             bg: '#F0FDF4'
         },
         {
             title: 'الطلبات المستلمة اليوم',
-            value: '4,512',
-            text: '+8% من أمس',
+            value: '0',
+            text: ' ',
             icon: Bike,
             color: '#785A2E',
             bg: '#FDD39E'
         },
         {
             title: 'الطلبات الشهرية',
-            value: '142,800',
-            text: 'إجمالي عمليات نشطة',
+            value: '0',
+            text: ' ',
             icon: CalendarDays,
             color: '#44474D',
             bg: '#E6E8EA'
@@ -102,8 +106,6 @@ function Restaurants() {
         setForm({
             code: '',
             name: '',
-            city: 'الرياض',
-            commission: '',
             status: 'نشط'
         })
         setShowForm(true)
@@ -111,7 +113,12 @@ function Restaurants() {
 
     const openEditForm = (item, index) => {
         setEditIndex(index)
-        setForm(item)
+        setForm({
+            code: item.id,
+            name: item.user?.fullname || '',
+            phone: item.user?.phone || '',
+            status: item.status === 'open' ? 'نشط' : 'غير نشط'
+        })
         setShowForm(true)
     }
 
@@ -133,34 +140,109 @@ function Restaurants() {
         })
     }
 
-    const saveRestaurant = (e) => {
+    const saveRestaurant = async (e) => {
         e.preventDefault()
 
-        if (!form.code || !form.name || !form.commission) {
-            return
-        }
+        try {
+            const item = restaurants[editIndex]
 
-        if (editIndex !== null) {
-            setRestaurants((prevRestaurants) => prevRestaurants.map((item, index) =>
-                index === editIndex ? form : item
-            ))
-        } else {
-            setRestaurants((prevRestaurants) => [form, ...prevRestaurants])
-        }
+            const response = await api.post(
+                `/admin/resturant/updateRestaurant/${item.id}`,
+                {
+                    fullname: form.name,
+                    phone: form.phone,
+                    description: form.description || '',
+                    commission_type: 'fixed',
+                    commission_value: 0
+                }
+            )
 
-        setShowForm(false)
-        setEditIndex(null)
+            console.log(response.data)
+
+            setRestaurants((prevRestaurants) =>
+                prevRestaurants.map((restaurant, index) =>
+                    index === editIndex
+                        ? {
+                            ...restaurant,
+                            user: {
+                                ...restaurant.user,
+                                fullname: form.name,
+                                phone: form.phone
+                            },
+                            status: form.status === 'نشط' ? 'open' : 'closed'
+                        }
+                        : restaurant
+                )
+            )
+
+            setShowForm(false)
+            setEditIndex(null)
+
+        } catch (error) {
+            console.log(error.response?.data || error)
+        }
     }
 
-    const deleteRestaurant = () => {
-        setRestaurants((prevRestaurants) => prevRestaurants.filter((item, index) => index !== deleteIndex))
-        setDeleteIndex(null)
-    }
+    // const deleteRestaurant = () => {
+    //     setRestaurants((prevRestaurants) => prevRestaurants.filter((item, index) => index !== deleteIndex))
+    //     setDeleteIndex(null)
+    // }
 
     const saveSettings = () => {
         alert('تم حفظ التغييرات')
     }
 
+    const openRestaurantDetails = async (item) => {
+        try {
+            const response = await api.get(
+                `/admin/resturant/getRestaurantDetailsWithMeals/${item.id}`
+            )
+
+            console.log(response.data)
+
+            setShowData(response.data.data)
+            setRestaurantMeals(response.data.data.meals || [])
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const handleMealChange = (e) => {
+        const { name, value } = e.target
+
+        setMealForm((prev) => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+    const addMeal = async (e) => {
+        e.preventDefault()
+
+        try {
+            const response = await api.post(
+                `/admin/meal/AddMeal/${mealForm.restaurant_id}`,
+                {
+                    name: mealForm.name,
+                    original_price: mealForm.original_price,
+                    category_name: mealForm.category_name
+                }
+            )
+
+            console.log(response.data)
+
+            setShowMealForm(false)
+
+            setMealForm({
+                restaurant_id: '',
+                name: '',
+                original_price: '',
+                category_name: ''
+            })
+
+        } catch (error) {
+            console.log(error.response?.data || error)
+        }
+    }
     return (
         <div className="restaurants-page">
             <div className="restaurants-head">
@@ -218,7 +300,7 @@ function Restaurants() {
                     <p className="small-title">إدارة الوجبات</p>
 
                     <div className="manage-grid">
-                        <button>
+                        <button onClick={() => setShowMealForm(true)}>
                             <Plus size={18} />
                             إضافة وجبة
                         </button>
@@ -290,8 +372,7 @@ function Restaurants() {
                         <thead>
                             <tr>
                                 <th>اسم المطعم</th>
-                                <th>المدينة</th>
-                                <th>العمولة</th>
+                                <th>رقم الهاتف</th>
                                 <th>الحالة</th>
                                 <th>العمليات</th>
                             </tr>
@@ -302,23 +383,20 @@ function Restaurants() {
                                 <tr key={index}>
                                     <td>
                                         <div className="food-name">
-                                            <span>{item.code}</span>
-                                            <b>{item.name}</b>
+                                            <span>{item.user?.fullname?.charAt(0)}</span>
+                                            <b>{item.user?.fullname}</b>
                                         </div>
                                     </td>
-
-                                    <td>{item.city}</td>
-                                    <td>{item.commission}</td>
-
+                                    <td>{item.user?.phone}</td>
                                     <td>
-                                        <span className={item.status === 'نشط' ? 'state active' : 'state stop'}>
-                                            {item.status}
+                                        <span className={item.status === 'open' ? 'state active' : 'state stop'}>
+                                            {item.status === 'open' ? 'نشط' : 'غير نشط'}
                                         </span>
                                     </td>
 
                                     <td>
                                         <div className="action-btns">
-                                            <button onClick={() => setShowData(item)}>
+                                            <button onClick={() => openRestaurantDetails(item)}>
                                                 <Eye size={16} />
                                             </button>
 
@@ -326,9 +404,9 @@ function Restaurants() {
                                                 <Pencil size={16} />
                                             </button>
 
-                                            <button onClick={() => setDeleteIndex(index)}>
+                                            {/* <button onClick={() => setDeleteIndex(index)}>
                                                 <Trash2 size={16} />
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </td>
                                 </tr>
@@ -337,17 +415,13 @@ function Restaurants() {
                     </table>
 
                     <div className="table-end">
-                        <p>عرض 1 إلى 10 من أصل 1,284 مطعم</p>
+                        <p>عرض {restaurants.length} من أصل {restaurants.length} مطعم</p>
 
                         <div className="pages">
                             <button className="page-btn">
                                 <ChevronRight size={16} />
                             </button>
                             <button className="active">1</button>
-                            <button>2</button>
-                            <button>3</button>
-                            <button>...</button>
-                            <button>129</button>
                             <button className="page-btn">
                                 <ChevronLeft size={16} />
                             </button>
@@ -388,22 +462,12 @@ function Restaurants() {
                         </div>
 
                         <div className="form-input">
-                            <label>المدينة</label>
-                            <select name="city" value={form.city} onChange={handleChange}>
-                                <option>الرياض</option>
-                                <option>جدة</option>
-                                <option>الدمام</option>
-                            </select>
-                        </div>
-
-                        <div className="form-input">
-                            <label>العمولة</label>
+                            <label>رقم الهاتف</label>
                             <input
                                 type="text"
-                                name="commission"
-                                value={form.commission}
+                                name="phone"
+                                value={form.phone}
                                 onChange={handleChange}
-                                placeholder="15%"
                             />
                         </div>
 
@@ -439,23 +503,43 @@ function Restaurants() {
 
                         <div className="show-line">
                             <span>اسم المطعم</span>
-                            <b>{showData.name}</b>
+                            <b>{showData.user?.fullname}</b>
                         </div>
 
                         <div className="show-line">
-                            <span>المدينة</span>
-                            <b>{showData.city}</b>
+                            <span>رقم الهاتف</span>
+                            <b>{showData.user?.phone}</b>
                         </div>
 
                         <div className="show-line">
-                            <span>العمولة</span>
-                            <b>{showData.commission}</b>
+                            <span>الوصف</span>
+                            <b>{showData.description}</b>
+                        </div>
+
+                        <div className="show-line">
+                            <span>وقت العمل</span>
+                            <b> {showData.working_hours_start} - {showData.working_hours_end} </b>
                         </div>
 
                         <div className="show-line">
                             <span>الحالة</span>
-                            <b>{showData.status}</b>
+                            <b>{showData.status === 'open' ? 'نشط' : 'غير نشط'}</b>
                         </div>
+                        <h3 style={{ marginTop: '20px' }}>الوجبات</h3>
+
+                        {
+                            restaurantMeals.length > 0 ? (
+                                restaurantMeals.map((meal) => (
+                                    <div className="show-line" key={meal.id}>
+                                        <span>{meal.name}</span>
+                                        <b>{meal.original_price}</b>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>لا يوجد وجبات حالياً</p>
+                            )
+                        }
+
                     </div>
                 </div>
             )}
@@ -477,6 +561,92 @@ function Restaurants() {
                     </div>
                 </div>
             )}
+            {showMealForm && (
+                <div className="form-bg">
+                    <form className="food-form" onSubmit={addMeal}>
+
+                        <div className="form-head">
+                            <h3>إضافة وجبة</h3>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowMealForm(false)}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="form-input">
+                            <label>اسم الوجبة</label>
+
+                            <input
+                                value={mealForm.name}
+                                onChange={(e) => setMealForm({
+                                    ...mealForm,
+                                    name: e.target.value
+                                })}
+                            />
+                        </div>
+
+
+                        <div className="form-input">
+                            <label>السعر</label>
+
+                            <input
+                                value={mealForm.original_price}
+                                onChange={(e) => setMealForm({
+                                    ...mealForm,
+                                    original_price: e.target.value
+                                })}
+                            />
+                        </div>
+                        <div className="form-input">
+                            <label>المطعم</label>
+
+                            <select
+                                name="restaurant_id"
+                                value={mealForm.restaurant_id}
+                                onChange={handleMealChange}
+                            >
+                                <option value="">اختر المطعم</option>
+
+                                {restaurants.map((restaurant) => (
+                                    <option key={restaurant.id} value={restaurant.id}>
+                                        {restaurant.user?.fullname}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-input">
+                            <label>التصنيف</label>
+
+                            <input
+                                value={mealForm.category_name}
+                                onChange={(e) => setMealForm({
+                                    ...mealForm,
+                                    category_name: e.target.value
+                                })}
+                            />
+                        </div>
+
+
+                        <div className="form-btns">
+                            <button
+                                type="button"
+                                onClick={() => setShowMealForm(false)}
+                            >
+                                إلغاء
+                            </button>
+
+                            <button type="submit">
+                                إضافة
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            )}
+
         </div>
     )
 }

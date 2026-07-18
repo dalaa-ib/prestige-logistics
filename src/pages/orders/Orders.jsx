@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     PackageCheck,
     Clock,
@@ -17,6 +17,7 @@ import {
     Star
 } from 'lucide-react'
 import './Orders.css'
+import api from '../../api/api'
 
 function Orders() {
     const [showOrder, setShowOrder] = useState(null)
@@ -32,38 +33,72 @@ function Orders() {
         status: 'قيد التوصيل'
     })
 
-    const [orders, setOrders] = useState([
-        {
-            number: '#ORD-9021',
-            customer: 'جاسم السعيد',
-            restaurant: 'برجر ستيشن - فرع التخصصي',
-            driver: 'فهد المطيري',
-            price: '245.00 SAR',
-            status: 'قيد التوصيل'
-        },
-        {
-            number: '#ORD-9020',
-            customer: 'منى الأحمد',
-            restaurant: 'بيتزا روما',
-            driver: 'سعود الحربي',
-            price: '120.50 SAR',
-            status: 'تحضير'
-        },
-        {
-            number: '#ORD-9019',
-            customer: 'سارة محمد',
-            restaurant: 'مطعم الشام',
-            driver: 'ماجد السبيعي',
-            price: '380.00 SAR',
-            status: 'مكتمل'
-        }
-    ])
+    const [orders, setOrders] = useState([])
+    const totalOrders = orders.length
 
+    const pendingOrders = orders.filter(
+        item => item.status === 'pending'
+    ).length
+
+    const deliveringOrders = orders.filter(
+        item => item.status === 'delivering'
+    ).length
+
+    const completedOrders = orders.filter(
+        item => item.status === 'completed'
+    ).length
+    useEffect(() => {
+        const getOrders = async () => {
+            try {
+                const response = await api.get('/admin/AllOrders')
+
+                console.log(response.data.data)
+
+                setOrders(response.data.data)
+
+            } catch (error) {
+                console.log(error.response?.data || error)
+            }
+        }
+
+        getOrders()
+    }, [])
     const cards = [
-        { title: 'إجمالي الطلبات', value: '1,284', text: '+12%', icon: ReceiptText, color: '#0D1C32', bg: '#EEF2FF' },
-        { title: 'طلبات معلقة', value: '42', text: 'تنبيه', icon: AlertCircle, color: '#D97706', bg: '#FFFBEB' },
-        { title: 'قيد التوصيل', value: '156', text: '24 طلب', icon: Clock, color: '#2563EB', bg: '#EFF6FF' },
-        { title: 'مكتملة اليوم', value: '1,086', text: 'مكتمل', icon: PackageCheck, color: '#059669', bg: '#ECFDF5' }
+        {
+            title: 'إجمالي الطلبات',
+            value: totalOrders,
+            text: 'كل الطلبات',
+            icon: ReceiptText,
+            color: '#0D1C32',
+            bg: '#EEF2FF'
+        },
+
+        {
+            title: 'طلبات معلقة',
+            value: pendingOrders,
+            text: 'بانتظار المعالجة',
+            icon: AlertCircle,
+            color: '#D97706',
+            bg: '#FFFBEB'
+        },
+
+        {
+            title: 'قيد التوصيل',
+            value: deliveringOrders,
+            text: 'طلبات نشطة',
+            icon: Clock,
+            color: '#2563EB',
+            bg: '#EFF6FF'
+        },
+
+        {
+            title: 'مكتملة اليوم',
+            value: completedOrders,
+            text: 'تم التسليم',
+            icon: PackageCheck,
+            color: '#059669',
+            bg: '#ECFDF5'
+        }
     ]
 
     const openEdit = (item, index) => {
@@ -276,20 +311,14 @@ function Orders() {
                         <tbody>
                             {orders.map((item, index) => (
                                 <tr key={index}>
-                                    <td><b>{item.number}</b></td>
-                                    <td>{item.customer}</td>
-                                    <td>{item.restaurant}</td>
-                                    <td>{item.driver}</td>
-                                    <td>{item.price}</td>
+                                    <td><b>{item.id}</b></td>
+                                    <td>{item.user?.fullname || '-'}</td>
+                                    <td>{item.restaurant?.name || '-'}</td>
+                                    <td>{item.driver?.fullname || '-'}</td>
+                                    <td>{item.total || item.price || '-'}</td>
                                     <td>
-                                        <span className={
-                                            item.status === 'مكتمل'
-                                                ? 'orders-state done'
-                                                : item.status === 'تحضير'
-                                                    ? 'orders-state prepare'
-                                                    : 'orders-state delivery'
-                                        }>
-                                            {item.status}
+                                        <span className="orders-state delivery">
+                                            {item.status || '-'}
                                         </span>
                                     </td>
                                     <td>
@@ -297,10 +326,12 @@ function Orders() {
                                             <button onClick={() => setShowOrder(item)}>
                                                 <Eye size={16} />
                                             </button>
-                                            <button onClick={() => openEdit(item, index)}>
+
+                                            <button>
                                                 <Pencil size={16} />
                                             </button>
-                                            <button onClick={() => setDeleteIndex(index)}>
+
+                                            <button>
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>
@@ -311,13 +342,11 @@ function Orders() {
                     </table>
 
                     <div className="orders-table-end">
-                        <p>عرض 1 إلى 10 من أصل 1,284 طلب</p>
+                        <p>عرض {orders.length} من أصل {orders.length} طلب</p>
 
                         <div className="orders-pages">
                             <button><ChevronRight size={16} /></button>
                             <button className="active">1</button>
-                            <button>2</button>
-                            <button>3</button>
                             <button><ChevronLeft size={16} /></button>
                         </div>
                     </div>

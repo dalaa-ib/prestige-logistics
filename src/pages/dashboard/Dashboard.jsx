@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     Users,
     CheckCircle,
@@ -7,6 +7,7 @@ import {
     TrendingUp
 } from 'lucide-react'
 import './Dashboard.css'
+import api from '../../api/api'
 
 import driver1 from '../../assets/images/driver1.png'
 import driver2 from '../../assets/images/driver2.png'
@@ -16,55 +17,91 @@ import { NavLink } from 'react-router-dom'
 
 function Dashboard() {
     const [chartType, setChartType] = useState('monthly')
+    const [admin, setAdmin] = useState(null)
+    const [restaurants, setRestaurants] = useState([])
+    const [orders, setOrders] = useState([])
 
+    useEffect(() => {
+
+        const getDashboardData = async () => {
+            try {
+
+                const restaurantsRes = await api.get(
+                    '/admin/resturant/getAllRestaurants'
+                )
+
+                const ordersRes = await api.get(
+                    '/admin/AllOrders'
+                )
+
+                console.log("ORDERS:", ordersRes.data.data)
+
+                setRestaurants(restaurantsRes.data.data)
+                setOrders(ordersRes.data.data)
+
+            } catch (error) {
+                console.log("ERROR:", error.response?.data)
+            }
+        }
+
+        getDashboardData()
+
+    }, [])
+
+    const totalRestaurants = restaurants.length
+    const totalOrders = orders.length
+    const totalRevenue = orders.reduce(
+        (sum, order) => sum + Number(order.total_price || 0),
+        0
+    )
     const cards = [
         {
             title: 'إجمالي الزبائن',
-            value: '1,240',
-            note: '+12%',
+            value: 0,
+            note: 'مستخدمين مسجلين',
             icon: Users,
             color: '#2563EB',
             bg: '#EEF2FF'
         },
         {
             title: 'السائقين النشطين',
-            value: '850',
-            note: 'متاحين الآن',
+            value: 0,
+            note: 'سائقين متاحين',
             icon: CheckCircle,
             color: '#059669',
             bg: '#ECFDF5'
         },
         {
             title: 'إجمالي المطاعم',
-            value: '420',
-            note: '4 مطاعم',
+            value: totalRestaurants,
+            note: 'مطاعم مسجلة',
             icon: Utensils,
             color: '#D97706',
             bg: '#FFFBEB'
         },
         {
             title: 'طلبات اليوم',
-            value: '3,120',
-            note: 'زياد طفيف',
+            value: totalOrders,
+            note: 'إجمالي الطلبات',
             icon: ClipboardList,
             color: '#4F46E5',
             bg: '#EEF2FF'
         },
         {
             title: 'طلبات معلقة',
-            value: '45',
+            value: 0,
             note: 'تحتاج متابعة',
             dot: '#EF4444'
         },
         {
             title: 'قيد التوصيل',
-            value: '112',
+            value: 0,
             note: 'طلب نشط',
             dot: '#3B82F6'
         },
         {
             title: 'اكتملت اليوم',
-            value: '2,963',
+            value: 0,
             note: 'نجاح عالي',
             dot: '#10B981'
         }
@@ -121,43 +158,6 @@ function Dashboard() {
         }
     ]
 
-    const orders = [
-        {
-            id: '#PL-8921',
-            restaurant: 'برجر هاوس المميز',
-            driver: 'أحمد محمد',
-            price: '$42.50',
-            status: 'قيد التوصيل'
-        },
-        {
-            id: '#PL-8920',
-            restaurant: 'بيتزا بلاس',
-            driver: 'سارة علي',
-            price: '$18.00',
-            status: 'مكتمل'
-        },
-        {
-            id: '#PL-8919',
-            restaurant: 'جرين لايف',
-            driver: 'باسل خالد',
-            price: '$65.20',
-            status: 'تحضير'
-        },
-        {
-            id: '#PL-8918',
-            restaurant: 'سوشي سنتر',
-            driver: 'ليلى حسن',
-            price: '$112.45',
-            status: 'مكتمل'
-        },
-        {
-            id: '#PL-8917',
-            restaurant: 'تاكو تاون',
-            driver: 'عمر فاروق',
-            price: '$29.90',
-            status: 'ملغى'
-        }
-    ]
 
     const getStatusClass = (status) => {
         if (status === 'قيد التوصيل') return 'status delivering'
@@ -170,7 +170,7 @@ function Dashboard() {
         <div className="dashboard-page">
             <div className="dashboard-header">
                 <h1>نظرة عامة على العمليات</h1>
-                <p>أهلاً بك مجدداً، إليك ملخص نشاط Prestige Logistics اليوم.</p>
+                <p>أهلاً بك مجدداً {admin?.fullname || ''}، إليك ملخص نشاط Prestige Logistics اليوم. </p>
             </div>
 
             <div className="cards-grid">
@@ -203,8 +203,8 @@ function Dashboard() {
                 <div className="revenue-card">
                     <TrendingUp size={22} />
                     <p>الإيرادات الشهرية</p>
-                    <h3>$420,000</h3>
-                    <span>زيادة 15.00% عن الشهر الماضي</span>
+                    <h3>${totalRevenue}</h3>
+                    <span>حسب الطلبات الحالية</span>
                 </div>
             </div>
 
@@ -313,19 +313,27 @@ function Dashboard() {
                         </thead>
 
                         <tbody>
-                            {orders.map((order) => (
-                                <tr key={order.id}>
-                                    <td>{order.id}</td>
-                                    <td>{order.restaurant}</td>
-                                    <td>{order.driver}</td>
-                                    <td>{order.price}</td>
-                                    <td>
-                                        <span className={getStatusClass(order.status)}>
-                                            {order.status}
-                                        </span>
+                            {orders.length > 0 ? (
+                                orders.map((order) => (
+                                    <tr key={order.id}>
+                                        <td>{order.id}</td>
+                                        <td>{order.restaurant?.name || '-'}</td>
+                                        <td>{order.driver?.name || '-'}</td>
+                                        <td>{order.total_price || '-'}</td>
+                                        <td>
+                                            <span className={getStatusClass(order.status)}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" style={{ textAlign: 'center' }}>
+                                        لا يوجد طلبات حالياً
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
